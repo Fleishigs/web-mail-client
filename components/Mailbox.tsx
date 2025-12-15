@@ -142,11 +142,12 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: any) {
     }
   }
 
-  const t = {
+  const themeClasses = {
     light: { bg: 'bg-white', sidebar: 'bg-gray-50 border-gray-200', header: 'bg-white border-gray-200', text: 'text-gray-900', textSecondary: 'text-gray-600', hover: 'hover:bg-gray-100', selected: 'bg-blue-50 border-l-4 border-blue-600', button: 'bg-blue-600 hover:bg-blue-700 text-white', buttonSecondary: 'bg-gray-100 hover:bg-gray-200 text-gray-700', input: 'bg-white border-gray-300' },
     dark: { bg: 'bg-gray-900', sidebar: 'bg-gray-800 border-gray-700', header: 'bg-gray-800 border-gray-700', text: 'text-gray-100', textSecondary: 'text-gray-400', hover: 'hover:bg-gray-700', selected: 'bg-gray-700 border-l-4 border-blue-500', button: 'bg-blue-600 hover:bg-blue-700 text-white', buttonSecondary: 'bg-gray-700 hover:bg-gray-600 text-gray-200', input: 'bg-gray-700 border-gray-600' },
     minimal: { bg: 'bg-gray-50', sidebar: 'bg-white border-gray-100', header: 'bg-white border-gray-100', text: 'text-gray-800', textSecondary: 'text-gray-500', hover: 'hover:bg-gray-50', selected: 'bg-gray-100 border-l-2 border-gray-900', button: 'bg-gray-900 hover:bg-gray-800 text-white', buttonSecondary: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200', input: 'bg-white border-gray-200' }
-  }[theme as 'light' | 'dark' | 'minimal'] || t.light
+  }
+  const t = themeClasses[theme as 'light' | 'dark' | 'minimal'] || themeClasses.light
 
   if (loading) return <div className={`min-h-screen flex items-center justify-center ${t.bg}`}><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>
 
