@@ -11,6 +11,10 @@ export default async function handler(
 
   const { code } = req.body
 
+  if (!code) {
+    return res.status(400).json({ error: 'Authorization code is required' })
+  }
+
   try {
     const response = await axios.post('https://accounts.zoho.com/oauth/v2/token', null, {
       params: {
@@ -25,6 +29,11 @@ export default async function handler(
     res.status(200).json(response.data)
   } catch (error: any) {
     console.error('Token exchange error:', error.response?.data || error.message)
-    res.status(500).json({ error: 'Failed to exchange token' })
+    
+    const errorMessage = error.response?.data?.error || 'Failed to exchange token'
+    res.status(500).json({ 
+      error: errorMessage,
+      details: error.response?.data 
+    })
   }
 }
