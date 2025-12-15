@@ -5,25 +5,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { token, accountId, to, subject, body, fromAddress } = req.body
+  const { token, accountId } = req.query
 
   try {
-    const response = await axios.post(
-      `https://mail.zoho.com/api/accounts/${accountId}/messages`,
-      {
-        fromAddress: fromAddress,
-        toAddress: to,
-        subject: subject,
-        content: body,
-      },
+    const response = await axios.get(
+      `https://mail.zoho.com/api/accounts/${accountId}/folders`,
       {
         headers: {
           Authorization: `Zoho-oauthtoken ${token}`,
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
       }
@@ -31,15 +24,12 @@ export default async function handler(
 
     res.status(200).json(response.data)
   } catch (error: any) {
-    console.error('Send email error:', error.response?.data || error.message)
+    console.error('Fetch folders error:', error.response?.data || error.message)
     
     if (error.response?.status === 401) {
       return res.status(401).json({ error: 'Unauthorized', needsRefresh: true })
     }
     
-    res.status(500).json({ 
-      error: 'Failed to send email',
-      details: error.response?.data 
-    })
+    res.status(500).json({ error: 'Failed to fetch folders' })
   }
 }

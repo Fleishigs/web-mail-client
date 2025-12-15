@@ -9,7 +9,7 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { token, accountId } = req.query
+  const { token, accountId, folderId } = req.query
 
   try {
     const response = await axios.get(
@@ -17,22 +17,24 @@ export default async function handler(
       {
         headers: {
           Authorization: `Zoho-oauthtoken ${token}`,
+          'Accept': 'application/json',
         },
         params: {
-          start: 0,
+          folderId: folderId,
           limit: 50,
+          start: 0,
         },
       }
     )
 
     res.status(200).json(response.data)
   } catch (error: any) {
-    console.error('Fetch emails error:', error.response?.data || error.message)
+    console.error('List emails error:', error.response?.data || error.message)
     
     if (error.response?.status === 401) {
       return res.status(401).json({ error: 'Unauthorized', needsRefresh: true })
     }
     
-    res.status(500).json({ error: 'Failed to fetch emails' })
+    res.status(500).json({ error: 'Failed to list emails' })
   }
 }
