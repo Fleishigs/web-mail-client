@@ -218,7 +218,9 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: MailboxProps) 
                     {email.fromAddress}
                   </span>
                   <span className={`text-xs ${currentTheme.textSecondary} ml-2`}>
-                    {formatDistanceToNow(new Date(email.receivedTime), { addSuffix: true })}
+                    {email.receivedTime 
+                      ? formatDistanceToNow(new Date(email.receivedTime), { addSuffix: true })
+                      : 'Recently'}
                   </span>
                 </div>
                 <p className={`font-medium ${currentTheme.text} truncate mb-1`}>
@@ -248,7 +250,9 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: MailboxProps) 
                     {selectedEmail.fromAddress}
                   </p>
                   <p className={`text-sm ${currentTheme.textSecondary}`}>
-                    {new Date(selectedEmail.receivedTime).toLocaleString()}
+                    {selectedEmail.receivedTime 
+                      ? new Date(selectedEmail.receivedTime).toLocaleString()
+                      : 'Date unknown'}
                   </p>
                 </div>
               </div>
