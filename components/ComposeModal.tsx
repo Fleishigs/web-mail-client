@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface ComposeModalProps {
   theme: string
   onClose: () => void
   onSend: (to: string, subject: string, body: string) => void
+  replyTo?: string
+  replySubject?: string
 }
 
-export default function ComposeModal({ theme, onClose, onSend }: ComposeModalProps) {
-  const [to, setTo] = useState('')
-  const [subject, setSubject] = useState('')
+export default function ComposeModal({ theme, onClose, onSend, replyTo, replySubject }: ComposeModalProps) {
+  const [to, setTo] = useState(replyTo || '')
+  const [subject, setSubject] = useState(replySubject || '')
   const [body, setBody] = useState('')
   const [sending, setSending] = useState(false)
 
@@ -55,36 +57,26 @@ export default function ComposeModal({ theme, onClose, onSend }: ComposeModalPro
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className={`${currentTheme.bg} rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col`}>
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className={`text-2xl font-bold ${currentTheme.text}`}>New Message</h2>
-          <button
-            onClick={onClose}
-            className={`${currentTheme.textSecondary} hover:${currentTheme.text} text-2xl`}
-          >
-            ×
-          </button>
+          <h2 className={`text-2xl font-bold ${currentTheme.text}`}>{replyTo ? 'Reply' : 'New Message'}</h2>
+          <button onClick={onClose} className={`${currentTheme.textSecondary} hover:${currentTheme.text} text-2xl`}>×</button>
         </div>
 
-        {/* Form */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           <div>
-            <label className={`block text-sm font-medium mb-2 ${currentTheme.text}`}>
-              To:
-            </label>
+            <label className={`block text-sm font-medium mb-2 ${currentTheme.text}`}>To:</label>
             <input
               type="email"
               value={to}
               onChange={(e) => setTo(e.target.value)}
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${currentTheme.input}`}
               placeholder="recipient@example.com"
+              disabled={!!replyTo}
             />
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-2 ${currentTheme.text}`}>
-              Subject:
-            </label>
+            <label className={`block text-sm font-medium mb-2 ${currentTheme.text}`}>Subject:</label>
             <input
               type="text"
               value={subject}
@@ -95,9 +87,7 @@ export default function ComposeModal({ theme, onClose, onSend }: ComposeModalPro
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-2 ${currentTheme.text}`}>
-              Message:
-            </label>
+            <label className={`block text-sm font-medium mb-2 ${currentTheme.text}`}>Message:</label>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
@@ -108,7 +98,6 @@ export default function ComposeModal({ theme, onClose, onSend }: ComposeModalPro
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-3 p-6 border-t">
           <button
             onClick={onClose}
