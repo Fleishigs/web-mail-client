@@ -18,6 +18,29 @@ interface MailboxProps {
   onLogout: () => void
 }
 
+// Safe date formatter
+const formatDate = (timestamp: number | string | undefined) => {
+  if (!timestamp) return 'Recently'
+  try {
+    const date = new Date(timestamp)
+    if (isNaN(date.getTime())) return 'Recently'
+    return formatDistanceToNow(date, { addSuffix: true })
+  } catch {
+    return 'Recently'
+  }
+}
+
+const formatFullDate = (timestamp: number | string | undefined) => {
+  if (!timestamp) return 'Date unknown'
+  try {
+    const date = new Date(timestamp)
+    if (isNaN(date.getTime())) return 'Date unknown'
+    return date.toLocaleString()
+  } catch {
+    return 'Date unknown'
+  }
+}
+
 export default function Mailbox({ theme, toggleTheme, onLogout }: MailboxProps) {
   const [emails, setEmails] = useState<Email[]>([])
   const [selectedEmail, setSelectedEmail] = useState<any>(null)
@@ -218,9 +241,7 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: MailboxProps) 
                     {email.fromAddress}
                   </span>
                   <span className={`text-xs ${currentTheme.textSecondary} ml-2`}>
-                    {email.receivedTime 
-                      ? formatDistanceToNow(new Date(email.receivedTime), { addSuffix: true })
-                      : 'Recently'}
+                    {formatDate(email.receivedTime)}
                   </span>
                 </div>
                 <p className={`font-medium ${currentTheme.text} truncate mb-1`}>
@@ -250,9 +271,7 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: MailboxProps) 
                     {selectedEmail.fromAddress}
                   </p>
                   <p className={`text-sm ${currentTheme.textSecondary}`}>
-                    {selectedEmail.receivedTime 
-                      ? new Date(selectedEmail.receivedTime).toLocaleString()
-                      : 'Date unknown'}
+                    {formatFullDate(selectedEmail.receivedTime)}
                   </p>
                 </div>
               </div>
