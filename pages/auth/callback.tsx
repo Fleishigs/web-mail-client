@@ -1,12 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
 export default function AuthCallback() {
   const router = useRouter()
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const handleCallback = async () => {
-      const { code } = router.query
+      const { code, error: oauthError } = router.query
+
+      if (oauthError) {
+        setError(`OAuth error: ${oauthError}`)
+        return
+      }
 
       if (code) {
         try {
@@ -20,15 +26,15 @@ export default function AuthCallback() {
 
           if (data.access_token) {
             localStorage.setItem('zoho_token', data.access_token)
-            localStorage.setItem('zoho_refresh_token', data.refresh_token)
+            if (data.refresh_token) {
+              localStorage.setItem('zoho_refresh_token', data.refresh_token)
+            }
             router.push('/')
           } else {
-            console.error('Failed to get token')
-            router.push('/')
+            setError(data.error || 'Failed to get access token')
           }
-        } catch (error) {
-          console.error('Auth error:', error)
-          router.push('/')
+        } catch (error: any) {
+          setError(`Auth error: ${error.message}`)
         }
       }
     }
@@ -37,6 +43,23 @@ export default function AuthCallback() {
       handleCallback()
     }
   }, [router.isReady, router.query])
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
+          <h2 className="text-xl font-bold text-red-600 mb-4">Authentication Error</h2>
+          <p className="text-gray-700 mb-4">{error}</p>
+          <button
+            onClick={() => router.push('/')}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
