@@ -18,7 +18,9 @@ export default function Home({ theme, toggleTheme }: any) {
   const handleLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_ZOHO_CLIENT_ID
     const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI
-    const scope = 'ZohoMail.messages.ALL,ZohoMail.accounts.READ'
+    const scope = 'ZohoMail.messages.ALL,ZohoMail.accounts.READ,ZohoMail.folders.READ'
+    
+    console.log('Login with:', { clientId, redirectUri })
     
     const authUrl = `https://accounts.zoho.com/oauth/v2/auth?scope=${scope}&client_id=${clientId}&response_type=code&access_type=offline&redirect_uri=${redirectUri}`
     
