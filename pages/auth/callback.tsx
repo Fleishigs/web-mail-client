@@ -9,13 +9,17 @@ export default function AuthCallback() {
     const handleCallback = async () => {
       const { code, error: oauthError } = router.query
 
+      console.log('Callback query:', router.query)
+
       if (oauthError) {
+        console.error('OAuth error:', oauthError)
         setError(`OAuth error: ${oauthError}`)
         return
       }
 
       if (code) {
         try {
+          console.log('Exchanging code for token...')
           const response = await fetch('/api/auth/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -23,17 +27,22 @@ export default function AuthCallback() {
           })
 
           const data = await response.json()
+          console.log('Token response:', data)
 
           if (data.access_token) {
+            console.log('Saving token to localStorage')
             localStorage.setItem('zoho_token', data.access_token)
             if (data.refresh_token) {
               localStorage.setItem('zoho_refresh_token', data.refresh_token)
             }
+            console.log('Redirecting to home...')
             router.push('/')
           } else {
+            console.error('No access token in response:', data)
             setError(data.error || 'Failed to get access token')
           }
         } catch (error: any) {
+          console.error('Auth error:', error)
           setError(`Auth error: ${error.message}`)
         }
       }
