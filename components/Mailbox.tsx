@@ -25,6 +25,7 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: any) {
   const [loading, setLoading] = useState(true)
   const [accountId, setAccountId] = useState('')
   const [showCompose, setShowCompose] = useState(false)
+  const [showReply, setShowReply] = useState(false)
   const [userEmail, setUserEmail] = useState('')
   const [folders, setFolders] = useState<Folder[]>([])
   const [currentFolderId, setCurrentFolderId] = useState('')
@@ -107,11 +108,16 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: any) {
       const token = localStorage.getItem('zoho_token')
       await axios.post('/api/emails/send', { token, accountId, fromAddress: userEmail, to, subject, body })
       setShowCompose(false)
+      setShowReply(false)
       alert('Sent!')
     } catch (error: any) {
       console.error('Error:', error)
       alert('Failed: ' + (error.response?.data?.details?.message || 'Error'))
     }
+  }
+
+  const handleReply = () => {
+    setShowReply(true)
   }
 
   const handleDelete = async () => {
@@ -205,6 +211,7 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: any) {
                   <p className={`font-semibold ${t.text}`}>{selectedEmail.fromAddress}</p>
                   <p className={`text-sm ${t.textSecondary}`}>{formatDate(selectedEmail.receivedTime || selectedEmail.sentDateInGMT)}</p>
                 </div>
+                <button onClick={handleReply} className={`px-4 py-2 rounded-lg ${t.button}`}>↩️ Reply</button>
                 <button onClick={handleDelete} className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white">🗑️</button>
               </div>
               <div className={t.text} dangerouslySetInnerHTML={{ __html: selectedEmail.content || selectedEmail.summary }} />
@@ -216,6 +223,15 @@ export default function Mailbox({ theme, toggleTheme, onLogout }: any) {
       </div>
 
       {showCompose && <ComposeModal theme={theme} onClose={() => setShowCompose(false)} onSend={handleSendEmail} />}
+      {showReply && selectedEmail && (
+        <ComposeModal 
+          theme={theme} 
+          onClose={() => setShowReply(false)} 
+          onSend={handleSendEmail}
+          replyTo={selectedEmail.fromAddress}
+          replySubject={`Re: ${selectedEmail.subject}`}
+        />
+      )}
     </div>
   )
 }
